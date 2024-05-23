@@ -1,0 +1,69 @@
+// Function to simulate a click on the button
+function clickButton() {
+    // Get the button element by its id
+    var button = document.getElementById("create-button");
+
+    // Simulate a click on the button
+    button.click();
+}
+
+// Call the function initially
+clickButton();
+
+// Call the function every 1 second (2000 milliseconds)
+setInterval(clickButton, 2000);
+
+
+
+
+// Function to download the specified image
+function downloadImage() {
+    // Retrieve processed URLs from local storage or initialize an empty array
+    let processedUrls = JSON.parse(localStorage.getItem('processedUrls')) || [];
+    
+    // Select the image element using the provided CSS selector
+    const image = document.querySelector('div:nth-child(1) > div > .mantine-focus-auto > .m-9e117634'); // Adjust the selector as needed
+    
+    // Check if the image element exists
+    if (image) {
+        const imageUrl = image.src;
+        
+        // Check if the URL has already been processed
+        if (!processedUrls.includes(imageUrl)) {
+            const filename = imageUrl.substring(imageUrl.lastIndexOf('/') + 1); // Extract filename from URL
+            
+            // Fetch the image data
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    // Create a temporary anchor element to trigger the download
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = filename;
+                    link.style.display = 'none';
+                    
+                    // Append the anchor element to the document body
+                    document.body.appendChild(link);
+                    
+                    // Trigger the download
+                    link.click();
+                    
+                    // Clean up by removing the anchor element
+                    document.body.removeChild(link);
+                    
+                    // Add the URL to the list of processed URLs
+                    processedUrls.push(imageUrl);
+                    
+                    // Save the updated list of processed URLs to local storage
+                    localStorage.setItem('processedUrls', JSON.stringify(processedUrls));
+                })
+                .catch(error => console.error('Error downloading image:', error));
+        }
+    }
+}
+
+// Call the function initially
+downloadImage();
+
+// Call the function every 1 second (1000 milliseconds)
+setInterval(downloadImage, 1000);
