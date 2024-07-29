@@ -10,8 +10,8 @@ function clickButton() {
 // Call the function initially
 clickButton();
 
-// Call the function every 1 second (2000 milliseconds)
-setInterval(clickButton, 2000);
+// Call the function every 4 second (4000 milliseconds)
+setInterval(clickButton, 4000);
 
 
 
@@ -65,5 +65,5 @@ function downloadImage() {
 // Call the function initially
 downloadImage();
 
-// Call the function every 1 second (1000 milliseconds)
-setInterval(downloadImage, 1000);
+// Call the function every 2 second (2000 milliseconds)
+setInterval(downloadImage, 2000);
