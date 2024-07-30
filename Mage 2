@@ -16,13 +16,12 @@ setInterval(clickButton, 4000);
 
 
 
-// Function to download the specified image
 function downloadImage() {
     // Retrieve processed URLs from local storage or initialize an empty array
     let processedUrls = JSON.parse(localStorage.getItem('processedUrls')) || [];
     
     // Select the image element using the provided CSS selector
-    const image = document.querySelector('div:nth-child(1) > div > .mantine-focus-auto > .m-9e117634'); // Adjust the selector as needed
+    const image = document.querySelector('div:nth-child(1) > div > .mantine-focus-auto > .m_9e117634'); // Adjust the selector as needed
     
     // Check if the image element exists
     if (image) {
@@ -34,7 +33,12 @@ function downloadImage() {
             
             // Fetch the image data
             fetch(imageUrl)
-                .then(response => response.blob())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.blob();
+                })
                 .then(blob => {
                     // Create a temporary anchor element to trigger the download
                     const link = document.createElement('a');
@@ -59,8 +63,14 @@ function downloadImage() {
                 })
                 .catch(error => console.error('Error downloading image:', error));
         }
+    } else {
+        console.error('Image element not found');
     }
 }
+
+// Example usage of the function
+downloadImage();
+
 
 // Call the function initially
 downloadImage();
