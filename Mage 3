@@ -1,17 +1,18 @@
-// Function to simulate a click on the button
-function clickButton() {
-    // Get the button element by its id
-    var button = document.getElementById("create-button");
+// Replace this with the actual selector for your button
+const buttonSelector = '#zvksow01xfkaofl1Xxz3ccff8';
 
-    // Simulate a click on the button
+// Function to click the button
+function clickButton() {
+  const button = document.querySelector(buttonSelector);
+  if (button) {
     button.click();
+  } else {
+    console.error('Button not found');
+  }
 }
 
-// Call the function initially
-clickButton();
-
-// Call the function every 4 second (4000 milliseconds)
-setInterval(clickButton, 4000);
+// Click the button every 3 seconds (3000 milliseconds)
+setInterval(clickButton, 3000);
 
 
 
