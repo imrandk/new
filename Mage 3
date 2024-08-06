@@ -17,71 +17,79 @@ setInterval(clickButton, 3000);
 
 
 
-function normalizeUrl(url) {
-    // Create a temporary anchor element to parse the URL
-    const a = document.createElement('a');
-    a.href = url;
-    // Return the normalized URL (without query parameters and fragments)
-    return a.protocol + '//' + a.host + a.pathname;
-}
 
-function downloadImage() {
-    // Retrieve processed URLs from local storage or initialize an empty array
-    let processedUrls = JSON.parse(localStorage.getItem('processedUrls')) || [];
 
-    // Select the image element using the provided CSS selector
-    const image = document.querySelector('.mantine-focus-auto.m_87cf2631 img'); // Adjust the selector as needed
-
-    // Check if the image element exists
-    if (image) {
-        const imageUrl = image.src;
-        const normalizedUrl = normalizeUrl(imageUrl);
-
-        // Check if the normalized URL has already been processed
-        if (!processedUrls.includes(normalizedUrl)) {
-            const filename = normalizedUrl.substring(normalizedUrl.lastIndexOf('/') + 1); // Extract filename from URL
-
-            // Fetch the image data
-            fetch(imageUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.blob();
-                })
-                .then(blob => {
-                    // Create a temporary anchor element to trigger the download
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = filename;
-                    link.style.display = 'none';
-
-                    // Append the anchor element to the document body
-                    document.body.appendChild(link);
-
-                    // Trigger the download
-                    link.click();
-
-                    // Clean up by removing the anchor element
-                    document.body.removeChild(link);
-
-                    // Add the normalized URL to the list of processed URLs
-                    processedUrls.push(normalizedUrl);
-
-                    // Save the updated list of processed URLs to local storage
-                    localStorage.setItem('processedUrls', JSON.stringify(processedUrls));
-                })
-                .catch(error => { /* handle error */ });
-        } else {
-            // Image has already been downloaded
-        }
-    } else {
-        // Image element not found
+(function() {
+    // Initialize the global processed URLs variable if it doesn't exist
+    if (!window.processedUrls) {
+        window.processedUrls = JSON.parse(localStorage.getItem('processedUrls')) || [];
     }
-}
 
-// Example usage of the function
-downloadImage();
+    function normalizeUrl(url) {
+        // Create a temporary anchor element to parse the URL
+        const a = document.createElement('a');
+        a.href = url;
+        // Return the normalized URL (without query parameters and fragments)
+        return a.protocol + '//' + a.host + a.pathname;
+    }
+
+    function downloadImage() {
+        // Select the image element using the provided CSS selector
+        const image = document.querySelector('.mantine-focus-auto.m_87cf2631 img'); // Adjust the selector as needed
+
+        // Check if the image element exists
+        if (image) {
+            const imageUrl = image.src;
+            const normalizedUrl = normalizeUrl(imageUrl);
+
+            // Check if the normalized URL has already been processed
+            if (!window.processedUrls.includes(normalizedUrl)) {
+                const filename = normalizedUrl.substring(normalizedUrl.lastIndexOf('/') + 1); // Extract filename from URL
+
+                // Fetch the image data
+                fetch(imageUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        // Create a temporary anchor element to trigger the download
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = filename;
+                        link.style.display = 'none';
+
+                        // Append the anchor element to the document body
+                        document.body.appendChild(link);
+
+                        // Trigger the download
+                        link.click();
+
+                        // Clean up by removing the anchor element
+                        document.body.removeChild(link);
+
+                        // Add the normalized URL to the list of processed URLs
+                        window.processedUrls.push(normalizedUrl);
+
+                        // Save the updated list of processed URLs to local storage
+                        localStorage.setItem('processedUrls', JSON.stringify(window.processedUrls));
+                    })
+                    .catch(error => { /* handle error */ });
+            }
+        }
+    }
+
+    // Call the function to download the image
+    downloadImage();
+})();
+
+
+
+
+
+
 
 
 // Call the function initially
