@@ -34,6 +34,8 @@ setInterval(clickButton, 3000);
     }
 
     function downloadImage() {
+        console.log('Attempting to download image...'); // Debug statement
+
         // Select the image element using the provided CSS selector
         const image = document.querySelector('.mantine-focus-auto.m_87cf2631 img'); // Adjust the selector as needed
 
@@ -44,6 +46,8 @@ setInterval(clickButton, 3000);
 
             // Check if the normalized URL has already been processed
             if (!window.processedUrls.includes(normalizedUrl)) {
+                console.log('Downloading new image:', normalizedUrl); // Debug statement
+
                 const filename = normalizedUrl.substring(normalizedUrl.lastIndexOf('/') + 1); // Extract filename from URL
 
                 // Fetch the image data
@@ -77,23 +81,17 @@ setInterval(clickButton, 3000);
                         localStorage.setItem('processedUrls', JSON.stringify(window.processedUrls));
                     })
                     .catch(error => { /* handle error */ });
+            } else {
+                console.log('Image already downloaded:', normalizedUrl); // Debug statement
             }
+        } else {
+            console.log('Image element not found'); // Debug statement
         }
     }
 
-    // Call the function to download the image
+    // Call the function initially
     downloadImage();
+
+    // Call the function every 2 seconds (2000 milliseconds)
+    setInterval(downloadImage, 2000);
 })();
-
-
-
-
-
-
-
-
-// Call the function initially
-downloadImage();
-
-// Call the function every 2 second (2000 milliseconds)
-setInterval(downloadImage, 2000);
