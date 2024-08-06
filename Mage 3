@@ -23,7 +23,6 @@ setInterval(clickButton, 3000);
     // Initialize the global processed URLs variable if it doesn't exist
     if (!window.processedUrls) {
         window.processedUrls = JSON.parse(localStorage.getItem('processedUrls')) || [];
-        console.log('Initialized processedUrls:', window.processedUrls); // Debug statement
     }
 
     function normalizeUrl(url) {
@@ -35,8 +34,6 @@ setInterval(clickButton, 3000);
     }
 
     function downloadImage() {
-        console.log('Attempting to download image...'); // Debug statement
-
         // Select the image element using the provided CSS selector
         const image = document.querySelector('.mantine-focus-auto.m_87cf2631 img'); // Adjust the selector as needed
 
@@ -45,13 +42,8 @@ setInterval(clickButton, 3000);
             const imageUrl = image.src;
             const normalizedUrl = normalizeUrl(imageUrl);
 
-            console.log('Image URL:', imageUrl); // Debug statement
-            console.log('Normalized URL:', normalizedUrl); // Debug statement
-
             // Check if the normalized URL has already been processed
             if (!window.processedUrls.includes(normalizedUrl)) {
-                console.log('Downloading new image:', normalizedUrl); // Debug statement
-
                 const filename = normalizedUrl.substring(normalizedUrl.lastIndexOf('/') + 1); // Extract filename from URL
 
                 // Fetch the image data
@@ -81,19 +73,11 @@ setInterval(clickButton, 3000);
                         // Add the normalized URL to the list of processed URLs
                         window.processedUrls.push(normalizedUrl);
 
-                        console.log('Updated processedUrls:', window.processedUrls); // Debug statement
-
                         // Save the updated list of processed URLs to local storage
                         localStorage.setItem('processedUrls', JSON.stringify(window.processedUrls));
                     })
-                    .catch(error => {
-                        console.error('Error downloading image:', error); // Debug statement
-                    });
-            } else {
-                console.log('Image already downloaded:', normalizedUrl); // Debug statement
+                    .catch(error => { /* handle error */ });
             }
-        } else {
-            console.log('Image element not found'); // Debug statement
         }
     }
 
