@@ -17,6 +17,14 @@ setInterval(clickButton, 3000);
 
 
 
+function normalizeUrl(url) {
+    // Create a temporary anchor element to parse the URL
+    const a = document.createElement('a');
+    a.href = url;
+    // Return the normalized URL (without query parameters and fragments)
+    return a.protocol + '//' + a.host + a.pathname;
+}
+
 function downloadImage() {
     // Retrieve processed URLs from local storage or initialize an empty array
     let processedUrls = JSON.parse(localStorage.getItem('processedUrls')) || [];
@@ -27,10 +35,11 @@ function downloadImage() {
     // Check if the image element exists
     if (image) {
         const imageUrl = image.src;
+        const normalizedUrl = normalizeUrl(imageUrl);
 
-        // Check if the URL has already been processed
-        if (!processedUrls.includes(imageUrl)) {
-            const filename = imageUrl.substring(imageUrl.lastIndexOf('/') + 1); // Extract filename from URL
+        // Check if the normalized URL has already been processed
+        if (!processedUrls.includes(normalizedUrl)) {
+            const filename = normalizedUrl.substring(normalizedUrl.lastIndexOf('/') + 1); // Extract filename from URL
 
             // Fetch the image data
             fetch(imageUrl)
@@ -56,8 +65,8 @@ function downloadImage() {
                     // Clean up by removing the anchor element
                     document.body.removeChild(link);
 
-                    // Add the URL to the list of processed URLs
-                    processedUrls.push(imageUrl);
+                    // Add the normalized URL to the list of processed URLs
+                    processedUrls.push(normalizedUrl);
 
                     // Save the updated list of processed URLs to local storage
                     localStorage.setItem('processedUrls', JSON.stringify(processedUrls));
