@@ -76,7 +76,7 @@ setInterval(clickButton, 3000);
                         // Save the updated list of processed URLs to local storage
                         localStorage.setItem('processedUrls', JSON.stringify(window.processedUrls));
                     })
-                    .catch(error => { /* handle error */ });
+                    .catch(error => { /* handle error silently */ });
             }
         }
     }
