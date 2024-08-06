@@ -62,10 +62,12 @@ function downloadImage() {
                     // Save the updated list of processed URLs to local storage
                     localStorage.setItem('processedUrls', JSON.stringify(processedUrls));
                 })
-                .catch(error => console.error('Error downloading image:', error));
+                .catch(error => { /* handle error */ });
+        } else {
+            // Image has already been downloaded
         }
     } else {
-        console.error('Image element not found');
+        // Image element not found
     }
 }
 
