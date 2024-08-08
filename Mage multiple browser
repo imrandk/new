@@ -73,7 +73,7 @@ function handleNewPosts() {
 async function runTasks() {
   if (isNotificationVisible()) {
     // Restart tasks after a delay if notification is visible
-    setTimeout(runTasks, 2000);
+    setTimeout(runTasks, 500);
     return;
   }
 
