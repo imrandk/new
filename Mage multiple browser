@@ -1,0 +1,64 @@
+// Selectors and data
+const buttonSelector = '#zvksow01xfkaofl1Xxz3ccff8';
+const svgXPath = '//*[@id="zvksow01xfkaofl1Xxz3ccff8"]/span/span[1]/svg';
+const svgSelector = '#zvksow01xfkaofl1Xxz3ccff8 svg[xmlns="http://www.w3.org/2000/svg"]';
+const pathData = 'm96 448 320-192L96 64v384z';
+const newPostsSelector = '.tabler-icon-arrow-bar-to-down';
+
+// Function to click the button if the SVG is not found
+async function clickButton() {
+  const button = document.querySelector(buttonSelector);
+  if (button) {
+    const svgElement = document.evaluate(svgXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (!svgElement) button.click();
+  }
+}
+
+// Function to check for the specific <path> element within the SVG
+function checkPath() {
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      const svg = document.querySelector(svgSelector);
+      if (svg) {
+        const paths = svg.getElementsByTagName('path');
+        for (let path of paths) {
+          if (path.getAttribute('d') === pathData) {
+            clearInterval(interval);
+            resolve();
+            return;
+          }
+        }
+      }
+    }, 1000);
+  });
+}
+
+// Function to handle new posts by clicking the SVG element
+function handleNewPosts() {
+  const svgElement = document.querySelector(newPostsSelector);
+  if (svgElement) {
+    const clickEvent = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      view: window
+    });
+    svgElement.dispatchEvent(clickEvent);
+  }
+}
+
+// Function to run all tasks and restart the process
+async function runTasks() {
+  try {
+    await clickButton();    // Step 1: Click the button if needed
+    await checkPath();     // Step 2: Wait for the specific path to appear
+    handleNewPosts();      // Step 3: Click the SVG element for new posts
+  } catch (error) {
+    console.error(error.message); // Handle errors
+  } finally {
+    // Restart the tasks after a delay
+    setTimeout(runTasks, 1000); // Delay before restarting the tasks
+  }
+}
+
+// Start execution
+runTasks();
