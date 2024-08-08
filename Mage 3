@@ -1,18 +1,24 @@
 // Replace this with the actual selector for your button
 const buttonSelector = '#zvksow01xfkaofl1Xxz3ccff8';
+const svgXPath = '//*[@id="zvksow01xfkaofl1Xxz3ccff8"]/span/span[1]/svg'; // XPath to locate the SVG
 
 // Function to click the button
 function clickButton() {
   const button = document.querySelector(buttonSelector);
+
   if (button) {
-    button.click();
-  } else {
-    console.error('Button not found');
+    // Use XPath to locate the SVG element
+    const svgElement = document.evaluate(svgXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+    if (!svgElement) {
+      button.click(); // Click the button if the SVG is not found
+    }
   }
 }
 
 // Click the button every 3 seconds (3000 milliseconds)
 setInterval(clickButton, 3000);
+
 
 
 
