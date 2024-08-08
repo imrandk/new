@@ -73,7 +73,7 @@ function handleNewPosts() {
 async function runTasks() {
   if (isNotificationVisible()) {
     // Restart tasks after a delay if notification is visible
-    setTimeout(runTasks, 2000);
+    setTimeout(runTasks, 1000);
     return;
   }
 
@@ -83,10 +83,10 @@ async function runTasks() {
     handleNewPosts();      // Step 3
 
     // Restart the tasks after a delay
-    setTimeout(runTasks, 2000); // Delay before restarting the tasks
+    setTimeout(runTasks, 1000); // Delay before restarting the tasks
   } catch {
     // Restart tasks after a delay in case of an error
-    setTimeout(runTasks, 1000);
+    setTimeout(runTasks, 3000);
   }
 }
 
