@@ -4,9 +4,24 @@ const svgXPath = '//*[@id="zvksow01xfkaofl1Xxz3ccff8"]/span/span[1]/svg';
 const svgSelector = '#zvksow01xfkaofl1Xxz3ccff8 svg[xmlns="http://www.w3.org/2000/svg"]';
 const pathData = 'm96 448 320-192L96 64v384z';
 const newPostsSelector = '.tabler-icon-arrow-bar-to-down';
+const notificationSelector = '.mage-Notification-root'; // Selector for the notification
+
+// Function to check for the notification message
+function isNotificationVisible() {
+  const notification = document.querySelector(notificationSelector);
+  if (notification) {
+    const title = notification.querySelector('.mage-Notification-title');
+    if (title && title.textContent.includes('Max Concurrency Reached')) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // Function to click the button if the SVG is not found
 async function clickButton() {
+  if (isNotificationVisible()) return; // Skip if notification is present
+
   const button = document.querySelector(buttonSelector);
   if (button) {
     const svgElement = document.evaluate(svgXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -18,6 +33,12 @@ async function clickButton() {
 function checkPath() {
   return new Promise((resolve) => {
     const interval = setInterval(() => {
+      if (isNotificationVisible()) {
+        clearInterval(interval); // Stop checking if notification appears
+        resolve(); // Resolve to allow tasks to restart
+        return;
+      }
+
       const svg = document.querySelector(svgSelector);
       if (svg) {
         const paths = svg.getElementsByTagName('path');
@@ -35,6 +56,8 @@ function checkPath() {
 
 // Function to handle new posts by clicking the SVG element
 function handleNewPosts() {
+  if (isNotificationVisible()) return; // Skip if notification is present
+
   const svgElement = document.querySelector(newPostsSelector);
   if (svgElement) {
     const clickEvent = new MouseEvent('click', {
@@ -48,15 +71,22 @@ function handleNewPosts() {
 
 // Function to run all tasks and restart the process
 async function runTasks() {
+  if (isNotificationVisible()) {
+    // Restart tasks after a delay if notification is visible
+    setTimeout(runTasks, 1000);
+    return;
+  }
+
   try {
-    await clickButton();    // Step 1: Click the button if needed
-    await checkPath();     // Step 2: Wait for the specific path to appear
-    handleNewPosts();      // Step 3: Click the SVG element for new posts
-  } catch (error) {
-    console.error(error.message); // Handle errors
-  } finally {
+    await clickButton();    // Step 1
+    await checkPath();     // Step 2
+    handleNewPosts();      // Step 3
+
     // Restart the tasks after a delay
     setTimeout(runTasks, 1000); // Delay before restarting the tasks
+  } catch {
+    // Restart tasks after a delay in case of an error
+    setTimeout(runTasks, 1000);
   }
 }
 
