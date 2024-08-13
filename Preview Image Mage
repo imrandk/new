@@ -1,0 +1,81 @@
+// Function to hide all images
+function hideImages() {
+    document.querySelectorAll('img').forEach(function(img) {
+        img.style.display = 'none'; // Hides the image entirely
+    });
+}
+
+// Function to show all images
+function showImages() {
+    document.querySelectorAll('img').forEach(function(img) {
+        img.style.display = ''; // Resets the display property to show the image
+    });
+}
+
+// Function to monitor and show new images during the override period
+function monitorAndHideNewImages(mutationsList) {
+    for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.tagName === 'IMG') {
+                    node.style.display = ''; // Show new image during the override
+                } else if (node.querySelectorAll) {
+                    node.querySelectorAll('img').forEach(function(img) {
+                        img.style.display = ''; // Show any images within the new node
+                    });
+                }
+            });
+        }
+    }
+}
+
+// Hide existing images initially
+hideImages();
+
+// Monitor the page for new images
+const observer = new MutationObserver(function(mutationsList) {
+    for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.tagName === 'IMG') {
+                    node.style.display = 'none'; // Hide the new image
+                } else if (node.querySelectorAll) {
+                    node.querySelectorAll('img').forEach(function(img) {
+                        img.style.display = 'none'; // Hide any images within the new node
+                    });
+                }
+            });
+        }
+    }
+});
+
+function temporarilyShowImages() {
+    // Show images
+    showImages();
+
+    // Start a new observer to show new images during the override
+    const tempObserver = new MutationObserver(monitorAndHideNewImages);
+    tempObserver.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+
+    // After 1 minute, hide images, revert to the original observer, and remove the script
+    setTimeout(function() {
+        tempObserver.disconnect(); // Stop the temporary observer
+        hideImages();
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+
+        // Remove the script element from the DOM
+        const scriptElement = document.currentScript;
+        if (scriptElement) {
+            scriptElement.remove();
+        }
+    }, 60000); // 60000 milliseconds = 1 minute
+}
+
+// Run the temporary override function
+temporarilyShowImages();
