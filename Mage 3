@@ -16,8 +16,8 @@ function clickButton() {
   }
 }
 
-// Click the button every 3 seconds (3000 milliseconds)
-setInterval(clickButton, 3000);
+// Click the button every 3 seconds (1000 milliseconds)
+setInterval(clickButton, 1000);
 
 
 
