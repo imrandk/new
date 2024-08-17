@@ -22,6 +22,31 @@ setInterval(clickButton, 3000);
 
 
 
+// Add CSS to hide progress bar elements
+var style = document.createElement('style');
+style.textContent = `
+    .mage-Progress-root {
+        display: none !important;
+    }
+    .mage-Progress-section {
+        display: none !important;
+    }
+`;
+document.head.appendChild(style);
+
+
+
+
+
+// Function to clear the console
+function clearConsole() {
+    console.clear();
+}
+
+// Set interval to clear console every 10 minutes (600,000 milliseconds)
+setInterval(clearConsole, 600000);
+
+
 
 
 
