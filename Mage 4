@@ -1,0 +1,66 @@
+// Selectors and data for the first button
+const buttonSelector = '#zvksow01xfkaofl1Xxz3ccff8';
+const svgXPath = '//*[@id="zvksow01xfkaofl1Xxz3ccff8"]/span/span[1]/svg';
+const notificationSelector = '.mage-Notification-root';
+
+// Function to check for the notification message
+function isNotificationVisible() {
+  const notification = document.querySelector(notificationSelector);
+  if (notification) {
+    const title = notification.querySelector('.mage-Notification-title');
+    if (title && title.textContent.includes('Max Concurrency Reached')) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Function to click the first button if the SVG is not found
+function clickFirstButton(callback) {
+  if (isNotificationVisible()) return; // Skip if notification is present
+
+  const button = document.querySelector(buttonSelector);
+  if (button) {
+    const svgElement = document.evaluate(svgXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (!svgElement) {
+      button.click();
+      // Wait for button click action to be completed before proceeding
+      setTimeout(callback, 1000); // Adjust delay as needed based on the action completion time
+    } else {
+      callback();
+    }
+  } else {
+    callback();
+  }
+}
+
+// Selectors and data for the second button
+const svgSelector = '#zvksow01xfkaofl1Xxz3ccff8 svg[xmlns="http://www.w3.org/2000/svg"]';
+const pathData = 'm96 448 320-192L96 64v384z';
+
+// Function to check for the specific <path> element within the SVG
+function checkPath() {
+  const interval = setInterval(() => {
+    if (isNotificationVisible()) {
+      clearInterval(interval); // Stop checking if notification appears
+      return;
+    }
+
+    const svg = document.querySelector(svgSelector);
+    if (svg) {
+      const paths = svg.getElementsByTagName('path');
+      for (let path of paths) {
+        if (path.getAttribute('d') === pathData) {
+          clearInterval(interval);
+          // Perform your action here if path is found
+          // Restart the process after a 1-second interval
+          setTimeout(() => clickFirstButton(checkPath), 1000);
+          return;
+        }
+      }
+    }
+  }, 1000);
+}
+
+// Execute the process
+clickFirstButton(checkPath);
