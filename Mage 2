@@ -10,8 +10,8 @@ function clickButton() {
 // Call the function initially
 clickButton();
 
-// Call the function every 4 second (2000 milliseconds)
-setInterval(clickButton, 2000);
+// Call the function every 2 second (1000 milliseconds)
+setInterval(clickButton, 1000);
 
 
 
@@ -19,18 +19,27 @@ setInterval(clickButton, 2000);
 function downloadImage() {
     // Retrieve processed URLs from local storage or initialize an empty array
     let processedUrls = JSON.parse(localStorage.getItem('processedUrls')) || [];
-    
+
+    // Check if a download is already in progress
+    if (localStorage.getItem('isDownloading') === 'true') {
+        console.log('Download already in progress');
+        return;
+    }
+
     // Select the image element using the provided CSS selector
     const image = document.querySelector('div:nth-child(1) > div > .mantine-focus-auto > .m_9e117634'); // Adjust the selector as needed
-    
+
     // Check if the image element exists
     if (image) {
         const imageUrl = image.src;
-        
+
         // Check if the URL has already been processed
         if (!processedUrls.includes(imageUrl)) {
             const filename = imageUrl.substring(imageUrl.lastIndexOf('/') + 1); // Extract filename from URL
-            
+
+            // Set the downloading flag
+            localStorage.setItem('isDownloading', 'true');
+
             // Fetch the image data
             fetch(imageUrl)
                 .then(response => {
@@ -45,23 +54,27 @@ function downloadImage() {
                     link.href = URL.createObjectURL(blob);
                     link.download = filename;
                     link.style.display = 'none';
-                    
+
                     // Append the anchor element to the document body
                     document.body.appendChild(link);
-                    
+
                     // Trigger the download
                     link.click();
-                    
+
                     // Clean up by removing the anchor element
                     document.body.removeChild(link);
-                    
+
                     // Add the URL to the list of processed URLs
                     processedUrls.push(imageUrl);
-                    
+
                     // Save the updated list of processed URLs to local storage
                     localStorage.setItem('processedUrls', JSON.stringify(processedUrls));
                 })
-                .catch(error => console.error('Error downloading image:', error));
+                .catch(error => console.error('Error downloading image:', error))
+                .finally(() => {
+                    // Release the downloading flag
+                    localStorage.removeItem('isDownloading');
+                });
         }
     } else {
         console.error('Image element not found');
@@ -71,9 +84,8 @@ function downloadImage() {
 // Example usage of the function
 downloadImage();
 
-
 // Call the function initially
 downloadImage();
 
-// Call the function every 2 second (2000 milliseconds)
+// Call the function every 2 seconds (2000 milliseconds)
 setInterval(downloadImage, 2000);
