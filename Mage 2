@@ -10,8 +10,8 @@ function clickButton() {
 // Call the function initially
 clickButton();
 
-// Call the function every 4 second (4000 milliseconds)
-setInterval(clickButton, 4000);
+// Call the function every 4 second (2000 milliseconds)
+setInterval(clickButton, 2000);
 
 
 
