@@ -1,0 +1,18 @@
+// Function to check for a new button link and click it
+function checkAndClickButton() {
+  // Get the button by class name
+  const button = document.querySelector('.m_811560b9.mage-Button-label');
+  
+  // If the button is found and has a different href link, click it
+  if (button && button.href !== lastButtonLink) {
+    button.click();
+    // Update the last clicked button link
+    lastButtonLink = button.href;
+  }
+}
+
+// Variable to store the last clicked button link
+let lastButtonLink = '';
+
+// Run the check periodically (e.g., every 2 seconds)
+setInterval(checkAndClickButton, 2000);
