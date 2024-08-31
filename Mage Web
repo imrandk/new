@@ -1,3 +1,56 @@
+// Replace this with the actual selector for your button
+const buttonSelector = '#zvksow01xfkaofl1Xxz3ccff8';
+const svgXPath = '//*[@id="zvksow01xfkaofl1Xxz3ccff8"]/span/span[1]/svg'; // XPath to locate the SVG
+
+// Function to click the button
+function clickButton() {
+  const button = document.querySelector(buttonSelector);
+
+  if (button) {
+    // Use XPath to locate the SVG element
+    const svgElement = document.evaluate(svgXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+    if (!svgElement) {
+      button.click(); // Click the button if the SVG is not found
+    }
+  }
+}
+
+// Click the button every 3 seconds (3000 milliseconds)
+setInterval(clickButton, 3000);
+
+
+
+
+// Add CSS to hide progress bar elements
+var style = document.createElement('style');
+style.textContent = `
+    .mage-Progress-root {
+        display: none !important;
+    }
+    .mage-Progress-section {
+        display: none !important;
+    }
+`;
+document.head.appendChild(style);
+
+
+
+
+
+// Function to clear the console
+function clearConsole() {
+    console.clear();
+}
+
+// Set interval to clear console every 10 minutes (600,000 milliseconds)
+setInterval(clearConsole, 600000);
+
+
+
+
+
+
 (function() {
     // Initialize the global processed URLs variable if it doesn't exist
     if (!window.processedUrls) {
