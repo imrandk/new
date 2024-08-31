@@ -1,18 +1,43 @@
-// Function to check for a new button link and click it
-function checkAndClickButton() {
-  // Get the button by class name
-  const button = document.querySelector('.m_811560b9.mage-Button-label');
-  
-  // If the button is found and has a different href link, click it
-  if (button && button.href !== lastButtonLink) {
-    button.click();
-    // Update the last clicked button link
-    lastButtonLink = button.href;
-  }
-}
+(function() {
+    // Initialize the global processed URLs variable if it doesn't exist
+    if (!window.processedUrls) {
+        window.processedUrls = JSON.parse(localStorage.getItem('processedUrls')) || [];
+    }
 
-// Variable to store the last clicked button link
-let lastButtonLink = '';
+    function normalizeUrl(url) {
+        const a = document.createElement('a');
+        a.href = url;
+        return a.protocol + '//' + a.host + a.pathname;
+    }
 
-// Run the check periodically (e.g., every 2 seconds)
-setInterval(checkAndClickButton, 2000);
+    function clickSaveButtonInsteadOfDownloading() {
+        // Select the image element using the provided CSS selector
+        const image = document.querySelector('.mantine-focus-auto.m_87cf2631 img'); // Adjust the selector as needed
+
+        if (image) {
+            const imageUrl = image.src;
+            const normalizedUrl = normalizeUrl(imageUrl);
+
+            if (!window.processedUrls.includes(normalizedUrl)) {
+                // Find the "Save" button using the new selector you provided
+                const saveButton = document.querySelector('.m_599a2148 .m_d57069b5 .mantine-focus-auto:nth-child(1) > .m_80f1301b');
+
+                if (saveButton) {
+                    saveButton.click(); // Click the "Save" button
+                }
+
+                // Add the normalized URL to the list of processed URLs
+                window.processedUrls.push(normalizedUrl);
+
+                // Save the updated list of processed URLs to local storage
+                localStorage.setItem('processedUrls', JSON.stringify(window.processedUrls));
+            }
+        }
+    }
+
+    // Call the function initially
+    clickSaveButtonInsteadOfDownloading();
+
+    // Call the function every 2 seconds (2000 milliseconds)
+    setInterval(clickSaveButtonInsteadOfDownloading, 2000);
+})();
