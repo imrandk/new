@@ -1,0 +1,72 @@
+// Get the second button element
+const secondButton = document.querySelector('.tabler-icon-chevron-left > path');
+
+// Function to simulate a click on an element
+function clickElement(element) {
+  const event = new MouseEvent('click', {
+    view: window,
+    bubbles: true,
+    cancelable: true
+  });
+  element.dispatchEvent(event);
+}
+
+// Function to download the image
+function downloadImage() {
+  // Get the image element
+  const imageElement = document.querySelector('.m_4451eb3a > img');
+
+  if (imageElement) {
+    const imageUrl = imageElement.src;
+
+    // Extract the file name from the URL
+    const fileName = imageUrl.split('/').pop();
+
+    // Check if the image has already been downloaded (you can implement your own logic here)
+    if (!localStorage.getItem(`downloaded-${fileName}`)) { 
+      fetch(imageUrl)
+        .then(response => response.blob())
+        .then(blob => {
+          // Create a temporary link element
+          const link = document.createElement('a');
+
+          // Set the link's download attribute to the extracted file name
+          link.download = fileName;
+
+          // Create a temporary URL for the Blob
+          const url = URL.createObjectURL(blob);
+
+          // Set the link's href attribute to the temporary URL
+          link.href = url;
+
+          // Add the link to the document (but hidden)
+          document.body.appendChild(link);
+
+          // Click the link to trigger the download
+          link.click();
+
+          // Remove the temporary link from the document
+          document.body.removeChild(link);
+
+          // Release the temporary URL
+          URL.revokeObjectURL(url);
+
+          // Mark the image as downloaded in localStorage
+          localStorage.setItem(`downloaded-${fileName}`, 'true');
+        })
+        .catch(error => {
+          console.error('Error fetching image:', error);
+        });
+    }
+  } else {
+    console.error('Image element with selector ".m_4451eb3a > img" not found.');
+  }
+}
+
+// Call the downloadImage function every 200 milliseconds
+setInterval(downloadImage, 200);
+
+// Simulate a click on the second button every 200 milliseconds
+setInterval(() => {
+  clickElement(secondButton);
+}, 200);
