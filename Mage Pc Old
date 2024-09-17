@@ -1,0 +1,57 @@
+// Button selector and XPath for the SVG element
+const btnSel = '.m_82577fc2 .mantine-focus-auto';
+const svgXPath = "//button[contains(@class, 'mantine-focus-auto')]//svg";
+
+// Function to click the button if SVG is not found
+function clickButton() {
+  const btn = document.querySelector(btnSel);
+  const svg = document.evaluate(svgXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+  if (btn && !svg) btn.click();
+}
+
+// Click the button every 2 seconds
+setInterval(clickButton, 2000);
+
+
+
+
+// Clear console every 10 minutes
+setInterval(() => console.clear(), 600000);
+
+
+
+// Initialize global processed URLs if not exist
+if (!window.processedUrls) window.processedUrls = JSON.parse(localStorage.getItem('processedUrls')) || [];
+
+// Normalize URL (without query parameters/fragments)
+const normalizeUrl = url => new URL(url).origin + new URL(url).pathname;
+
+// Function to download the image
+function downloadImage() {
+  const img = document.querySelector('.m_6d731127 > div:nth-child(2) > div > div:nth-child(1) > .mantine-focus-auto:nth-child(1) img');
+  if (img) {
+    const imgUrl = img.src;
+    const normalizedUrl = normalizeUrl(imgUrl);
+    if (!window.processedUrls.includes(normalizedUrl)) {
+      const filename = normalizedUrl.split('/').pop();
+      fetch(imgUrl)
+        .then(res => res.ok ? res.blob() : Promise.reject())
+        .then(blob => {
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = filename;
+          link.style.display = 'none';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.processedUrls.push(normalizedUrl);
+          localStorage.setItem('processedUrls', JSON.stringify(window.processedUrls));
+        })
+        .catch(() => {});
+    }
+  }
+}
+
+// Download the image every 2 seconds
+downloadImage();
+setInterval(downloadImage, 2000);
