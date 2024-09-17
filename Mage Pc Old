@@ -20,6 +20,60 @@ setInterval(() => console.clear(), 600000);
 
 
 
+
+
+
+// Function to remove elements with specific classes
+function removeElements() {
+    ['.m_e615b15f', '.m_e615b15f.mage-Card-root.m_1b7284a3.mage-Paper-root'].forEach(selector => 
+        document.querySelector(selector)?.remove()
+    );
+}
+
+// Call the function to remove specific elements
+removeElements();
+
+// Delay function
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+// Function to execute removals with delays
+async function removeWithDelays() {
+    for (const selector of [
+        '.m_7485cace > .m_6d731127 > div:nth-child(3)',
+        '.m_7485cace > .m_6d731127 > div > .m_6d731127',
+        '.m_7485cace > .m_6d731127 > .m_6d731127'
+    ]) {
+        await delay(100); // Adjust delay as needed
+        document.querySelector(selector)?.remove();
+    }
+}
+
+// Execute the removals with delays
+removeWithDelays();
+
+// Function to remove the image based on the provided selector
+function removeImage() {
+    document.querySelector('div:nth-child(3) > div > div > .mantine-focus-auto img')?.remove();
+}
+
+// Create a MutationObserver to watch for changes in the DOM
+const observer = new MutationObserver(removeImage);
+
+// Start observing the document body for changes
+observer.observe(document.body, { childList: true, subtree: true });
+
+// Call removeImage immediately to catch any existing image
+removeImage();
+
+
+
+
+
+
+
+
+
+
 // Initialize global processed URLs if not exist
 if (!window.processedUrls) window.processedUrls = JSON.parse(localStorage.getItem('processedUrls')) || [];
 
