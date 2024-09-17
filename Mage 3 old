@@ -50,6 +50,9 @@ setInterval(clearConsole, 600000);
 
 
 
+
+
+
 (function() {
     // Initialize the global processed URLs variable if it doesn't exist
     if (!window.processedUrls) {
