@@ -1,0 +1,65 @@
+// Initialize global processed URLs if not exist
+if (!window.processedUrls) window.processedUrls = JSON.parse(localStorage.getItem('processedUrls')) || [];
+
+// Normalize URL (without query parameters/fragments)
+const normalizeUrl = url => new URL(url).origin + new URL(url).pathname;
+
+// Function to download the cropped and resized image
+function downloadAndCropImage() {
+  const img = document.querySelector('.m_6d731127 > div:nth-child(2) > div > div:nth-child(1) > .mantine-focus-auto:nth-child(1) img');
+  if (img) {
+    const imgUrl = img.src;
+    const normalizedUrl = normalizeUrl(imgUrl);
+    
+    if (!window.processedUrls.includes(normalizedUrl)) {
+      const filename = normalizedUrl.split('/').pop();
+      fetch(imgUrl)
+        .then(res => res.ok ? res.blob() : Promise.reject())
+        .then(blob => {
+          const imgElement = new Image();
+          imgElement.src = URL.createObjectURL(blob);
+
+          imgElement.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set the desired cropping and canvas dimensions
+            const cropHeight = 40;  // Adjust this based on the watermark height
+            const width = imgElement.width;
+            const height = imgElement.height - cropHeight;  // Crop from the bottom
+
+            // Set canvas size
+            canvas.width = width;
+            canvas.height = height;
+
+            // Draw the cropped image onto the canvas
+            ctx.drawImage(imgElement, 0, 0, width, height, 0, 0, width, height);
+
+            // Convert the canvas to a blob for downloading
+            canvas.toBlob(croppedBlob => {
+              const link = document.createElement('a');
+              link.href = URL.createObjectURL(croppedBlob);
+              link.download = filename;
+              link.style.display = 'none';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+
+              // Add to processed URLs and save to local storage
+              window.processedUrls.push(normalizedUrl);
+              localStorage.setItem('processedUrls', JSON.stringify(window.processedUrls));
+            }, 'image/jpeg');  // Save as JPEG
+          };
+
+          imgElement.onerror = () => {
+            console.error('Failed to load the image for cropping.');
+          };
+        })
+        .catch(() => { /* handle error silently */ });
+    }
+  }
+}
+
+// Download the cropped image every 2 seconds
+downloadAndCropImage();
+setInterval(downloadAndCropImage, 2000);
