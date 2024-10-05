@@ -40,7 +40,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function removeWithDelays() {
     for (const selector of [
         '.m_7485cace > .m_6d731127 > div:nth-child(3)',
-        '.m_7485cace > .m_6d731127 > div > .m_6d731127',
+		'.m_6d731127 > .m_e615b15f:nth-child(2)',
         '.m_7485cace > .m_6d731127 > .m_6d731127'
     ]) {
         await delay(100); // Adjust delay as needed
@@ -64,7 +64,6 @@ observer.observe(document.body, { childList: true, subtree: true });
 
 // Call removeImage immediately to catch any existing image
 removeImage();
-
 
 
 
