@@ -21,6 +21,16 @@ setInterval(() => console.clear(), 600000);
 
 
 
+setInterval(function() {
+    const button = document.querySelector('.m_c0783ff9 > div > .m_4081bf90 > .mantine-focus-auto:nth-child(1) .m_811560b9:nth-child(2)');
+    if (button) {
+        button.click();
+    }
+}, 60000);  // 60000 milliseconds = 1 minute
+
+
+
+
 
 
 // Function to remove elements with specific classes
