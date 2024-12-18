@@ -82,9 +82,9 @@ setInterval(function() {
         return a.protocol + '//' + a.host + a.pathname;
     }
 
-    function downloadAndCropImage() {
+    function downloadImage() {
         // Select the image element using the provided CSS selector
-        const image = document.querySelector('.mantine-focus-auto.m_87cf2631 img'); // Adjust the selector as needed
+        const image = document.querySelector('.m_4451eb3a > img'); // Adjust the selector as needed
 
         // Check if the image element exists
         if (image) {
@@ -104,52 +104,26 @@ setInterval(function() {
                         return response.blob();
                     })
                     .then(blob => {
-                        const img = new Image();
-                        img.src = URL.createObjectURL(blob);
+                        // Create a temporary anchor element to trigger the download
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = filename;
+                        link.style.display = 'none';
 
-                        img.onload = function () {
-                            // Create an off-screen canvas for cropping
-                            const canvas = document.createElement('canvas');
-                            const ctx = canvas.getContext('2d');
+                        // Append the anchor element to the document body
+                        document.body.appendChild(link);
 
-                            // Set the crop dimensions (crop from the bottom, keeping the top intact)
-                            const cropHeight = 40;  // Adjust this based on the watermark height
+                        // Trigger the download
+                        link.click();
 
-                            // Set canvas width and height based on the original image
-                            canvas.width = img.width;
-                            canvas.height = img.height - cropHeight;
+                        // Clean up by removing the anchor element
+                        document.body.removeChild(link);
 
-                            // Draw the image on the canvas, cropping from the bottom
-                            ctx.drawImage(img, 0, 0, img.width, img.height - cropHeight, 0, 0, img.width, img.height - cropHeight);
+                        // Add the normalized URL to the list of processed URLs
+                        window.processedUrls.push(normalizedUrl);
 
-                            // Convert canvas to a blob and trigger the download
-                            canvas.toBlob(function (croppedBlob) {
-                                // Create a temporary anchor element to trigger the download
-                                const link = document.createElement('a');
-                                link.href = URL.createObjectURL(croppedBlob);
-                                link.download = filename;
-                                link.style.display = 'none';
-
-                                // Append the anchor element to the document body
-                                document.body.appendChild(link);
-
-                                // Trigger the download
-                                link.click();
-
-                                // Clean up by removing the anchor element
-                                document.body.removeChild(link);
-
-                                // Add the normalized URL to the list of processed URLs
-                                window.processedUrls.push(normalizedUrl);
-
-                                // Save the updated list of processed URLs to local storage
-                                localStorage.setItem('processedUrls', JSON.stringify(window.processedUrls));
-                            }, 'image/jpeg');  // Save as JPEG
-                        };
-
-                        img.onerror = function () {
-                            console.error('Failed to load the image for cropping');
-                        };
+                        // Save the updated list of processed URLs to local storage
+                        localStorage.setItem('processedUrls', JSON.stringify(window.processedUrls));
                     })
                     .catch(error => { /* handle error silently */ });
             }
@@ -157,8 +131,8 @@ setInterval(function() {
     }
 
     // Call the function initially
-    downloadAndCropImage();
+    downloadImage();
 
     // Call the function every 2 seconds (2000 milliseconds)
-    setInterval(downloadAndCropImage, 2000);
+    setInterval(downloadImage, 2000);
 })();
