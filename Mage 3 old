@@ -1,138 +1,80 @@
-// Replace this with the actual selector for your button
-const buttonSelector = '#zvksow01xfkaofl1Xxz3ccfx8 .m_811560b9';
-const svgXPath = '//*[@id="zvksow01xfkaofl1Xxz3ccff8"]/span/span[1]/svg'; // XPath to locate the SVG
-
-// Function to click the button
-function clickButton() {
-  const button = document.querySelector(buttonSelector);
-
-  if (button) {
-    // Use XPath to locate the SVG element
-    const svgElement = document.evaluate(svgXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-
-    if (!svgElement) {
-      button.click(); // Click the button if the SVG is not found
-    }
-  }
-}
-
-// Click the button every 3 seconds (3000 milliseconds)
-setInterval(clickButton, 3000);
-
-
-
-
-// Add CSS to hide progress bar elements
+// Hide progress bars
 var style = document.createElement('style');
 style.textContent = `
-    .mage-Progress-root {
-        display: none !important;
-    }
+    .mage-Progress-root,
     .mage-Progress-section {
         display: none !important;
     }
 `;
 document.head.appendChild(style);
 
-
-
-
-
-// Function to clear the console
-function clearConsole() {
-    console.clear();
+// Function to automatically click buttons at specified intervals
+function autoClick(selector, interval) {
+  setInterval(function() {
+    const button = document.querySelector(selector);
+    if (button) {
+      button.click();
+    }
+  }, interval);
 }
 
-// Set interval to clear console every 10 minutes (600,000 milliseconds)
+// Click the first button every 3 seconds
+autoClick('#zvksow01xfkaofl1Xxz3ccfx8 .m_811560b9', 3000);
+
+// Click the second button every minute
+autoClick('.m_c0783ff9 > div > .m_4081bf90 > .mantine-focus-auto:nth-child(1) .m_811560b9:nth-child(2)', 60000);
+
+// Function to clear the console every 10 minutes
+function clearConsole() {
+  console.clear();
+}
 setInterval(clearConsole, 600000);
 
-
-
-
-
-
-
-
-setInterval(function() {
-    const button = document.querySelector('.m_c0783ff9 > div > .m_4081bf90 > .mantine-focus-auto:nth-child(1) .m_811560b9:nth-child(2)');
-    if (button) {
-        button.click();
-    }
-}, 60000);  // 60000 milliseconds = 1 minute
-
-
-
-
-
-
-
-
-
+// Image downloading functionality
 (function() {
-    // Initialize the global processed URLs variable if it doesn't exist
-    if (!window.processedUrls) {
-        window.processedUrls = JSON.parse(localStorage.getItem('processedUrls')) || [];
-    }
+  // Initialize processed URLs
+  if (!window.processedUrls) {
+    window.processedUrls = JSON.parse(localStorage.getItem('processedUrls')) || [];
+  }
 
-    function normalizeUrl(url) {
-        // Create a temporary anchor element to parse the URL
-        const a = document.createElement('a');
-        a.href = url;
-        // Return the normalized URL (without query parameters and fragments)
-        return a.protocol + '//' + a.host + a.pathname;
-    }
+  function normalizeUrl(url) {
+    const parsedUrl = new URL(url);
+    return parsedUrl.origin + parsedUrl.pathname;
+  }
 
-    function downloadImage() {
-        // Select the image element using the provided CSS selector
-        const image = document.querySelector('.m_4451eb3a > img'); // Adjust the selector as needed
-
-        // Check if the image element exists
-        if (image) {
-            const imageUrl = image.src;
-            const normalizedUrl = normalizeUrl(imageUrl);
-
-            // Check if the normalized URL has already been processed
-            if (!window.processedUrls.includes(normalizedUrl)) {
-                const filename = normalizedUrl.substring(normalizedUrl.lastIndexOf('/') + 1); // Extract filename from URL
-
-                // Fetch the image data
-                fetch(imageUrl)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.blob();
-                    })
-                    .then(blob => {
-                        // Create a temporary anchor element to trigger the download
-                        const link = document.createElement('a');
-                        link.href = URL.createObjectURL(blob);
-                        link.download = filename;
-                        link.style.display = 'none';
-
-                        // Append the anchor element to the document body
-                        document.body.appendChild(link);
-
-                        // Trigger the download
-                        link.click();
-
-                        // Clean up by removing the anchor element
-                        document.body.removeChild(link);
-
-                        // Add the normalized URL to the list of processed URLs
-                        window.processedUrls.push(normalizedUrl);
-
-                        // Save the updated list of processed URLs to local storage
-                        localStorage.setItem('processedUrls', JSON.stringify(window.processedUrls));
-                    })
-                    .catch(error => { /* handle error silently */ });
+  function downloadImage() {
+    const image = document.querySelector('.m_4451eb3a > img');
+    if (image) {
+      const imageUrl = image.src;
+      const normalizedUrl = normalizeUrl(imageUrl);
+      if (!window.processedUrls.includes(normalizedUrl)) {
+        const filename = normalizedUrl.substring(normalizedUrl.lastIndexOf('/') + 1);
+        fetch(imageUrl)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
             }
-        }
+            return response.blob();
+          })
+          .then(blob => {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.processedUrls.push(normalizedUrl);
+            localStorage.setItem('processedUrls', JSON.stringify(window.processedUrls));
+          })
+          .catch(error => {});
+      }
     }
+  }
 
-    // Call the function initially
-    downloadImage();
+  // Initial download
+  downloadImage();
 
-    // Call the function every 2 seconds (2000 milliseconds)
-    setInterval(downloadImage, 2000);
+  // Check for new images every 2 seconds
+  setInterval(downloadImage, 2000);
 })();
