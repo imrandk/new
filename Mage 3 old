@@ -22,7 +22,7 @@ function autoClick(selector, interval) {
 autoClick('#zvksow01xfkaofl1Xxz3ccfx8 .m_811560b9', 3000);
 
 // Click the second button every minute
-autoClick('.m_c0783ff9 > div > .m_4081bf90 > .mantine-focus-auto:nth-child(1) .m_811560b9:nth-child(2)', 60000);
+autoClick('.m_c0783ff9 > div > .m_4081bf90 > .mantine-focus-auto:nth-child(1) .m_811560b9:nth-child(2)', 30000);
 
 // Function to clear the console every 10 minutes
 function clearConsole() {
