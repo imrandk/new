@@ -1,0 +1,77 @@
+// Hide progress bars
+var style = document.createElement('style');
+style.textContent = `
+    .mage-Progress-root,
+    .mage-Progress-section {
+        display: none !important;
+    }
+`;
+document.head.appendChild(style);
+
+// Function to automatically click buttons at specified intervals
+function autoClick(selector, interval) {
+  setInterval(function() {
+    const button = document.querySelector(selector);
+    if (button) {
+      button.click();
+    }
+  }, interval);
+}
+
+// Click the first button every 3 seconds
+autoClick('#zvksow01xfkaofl1Xxz3ccfx8 .m_811560b9', 3000);
+
+// Function to clear the console every 10 minutes
+function clearConsole() {
+  console.clear();
+}
+setInterval(clearConsole, 600000);
+
+// Image downloading functionality
+(function() {
+  // Initialize processed URLs
+  if (!window.processedUrls) {
+    window.processedUrls = JSON.parse(localStorage.getItem('processedUrls')) || [];
+  }
+
+  function normalizeUrl(url) {
+    const parsedUrl = new URL(url);
+    return parsedUrl.origin + parsedUrl.pathname;
+  }
+
+  function downloadImage() {
+    const image = document.querySelector('.m_4451eb3a > img');
+    if (image) {
+      const imageUrl = image.src;
+      const normalizedUrl = normalizeUrl(imageUrl);
+      if (!window.processedUrls.includes(normalizedUrl)) {
+        const filename = normalizedUrl.substring(normalizedUrl.lastIndexOf('/') + 1);
+        fetch(imageUrl)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.blob();
+          })
+          .then(blob => {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.processedUrls.push(normalizedUrl);
+            localStorage.setItem('processedUrls', JSON.stringify(window.processedUrls));
+          })
+          .catch(error => {});
+      }
+    }
+  }
+
+  // Initial download
+  downloadImage();
+
+  // Check for new images every 2 seconds
+  setInterval(downloadImage, 2000);
+})();
