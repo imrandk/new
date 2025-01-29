@@ -1,0 +1,161 @@
+let userInputs = [], shuffledInputs = [];
+
+const container = document.createElement("div");
+Object.assign(container.style, {
+    position: "absolute", top: "10px", left: "50%", transform: "translateX(-50%)",
+    width: "50%", minHeight: "150px", background: "white", border: "2px solid #007bff",
+    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)", resize: "both", overflow: "auto",
+    fontFamily: "Arial, sans-serif", display: "flex", flexDirection: "column"
+});
+
+const titleBar = document.createElement("div");
+titleBar.textContent = "Drag Me";
+Object.assign(titleBar.style, {
+    background: "#007bff", color: "white", padding: "5px", cursor: "move",
+    textAlign: "center", fontWeight: "bold"
+});
+
+const textArea = document.createElement("textarea");
+Object.assign(textArea.style, {
+    flex: "1", width: "100%", minHeight: "100px", padding: "10px",
+    border: "none", outline: "none", fontSize: "18px", resize: "none"
+});
+
+container.append(titleBar, textArea);
+document.body.appendChild(container);
+
+textArea.addEventListener("input", () => {
+    userInputs = textArea.value
+        .split("\n")
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .map(line => line.replace(/^Prompt:\s*/, ""));
+
+    shuffleInputs();
+});
+
+function shuffleInputs() {
+    shuffledInputs = userInputs.map(value => ({ value, sort: Math.random() }))
+                               .sort((a, b) => a.sort - b.sort)
+                               .map(({ value }) => value);
+}
+
+let targetTextArea = null;
+function findTargetTextArea() {
+    targetTextArea = document.querySelector('textarea[placeholder="Describe to generate..."]') ||
+                     document.querySelector("textarea.mage-Textarea-input") ||
+                     document.querySelectorAll("textarea")[1];
+}
+
+function setNativeValue(element, value) {
+    let lastValue = element.value;
+    element.value = value;
+    let event = new Event('input', { bubbles: true });
+    let tracker = element._valueTracker;
+    if (tracker) tracker.setValue(lastValue);
+    element.dispatchEvent(event);
+}
+
+function updateText() {
+    findTargetTextArea();
+    if (!targetTextArea || shuffledInputs.length === 0) return;
+
+    let randomIndex = Math.floor(Math.random() * shuffledInputs.length);
+    setNativeValue(targetTextArea, shuffledInputs.splice(randomIndex, 1)[0]);
+
+    if (shuffledInputs.length === 0) {
+        shuffleInputs();
+    }
+}
+
+setInterval(updateText, 30000);
+setInterval(findTargetTextArea, 5000);
+findTargetTextArea();
+updateText();
+
+let isDragging = false, offsetX = 0, offsetY = 0;
+titleBar.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    offsetX = e.clientX - container.offsetLeft;
+    offsetY = e.clientY - container.offsetTop;
+});
+document.addEventListener("mousemove", (e) => {
+    if (isDragging) {
+        container.style.left = e.clientX - offsetX + "px";
+        container.style.top = e.clientY - offsetY + "px";
+    }
+});
+document.addEventListener("mouseup", () => isDragging = false);
+
+// Hide progress bars
+var style = document.createElement('style');
+style.textContent = `
+    .mage-Progress-root,
+    .mage-Progress-section {
+        display: none !important;
+    }
+`;
+document.head.appendChild(style);
+
+// Auto click function
+function autoClick(selector, interval) {
+  setInterval(function() {
+    const button = document.querySelector(selector);
+    if (button) {
+      button.click();
+    }
+  }, interval);
+}
+
+autoClick('#zvksow01xfkaofl1Xxz3ccfx8 .m_811560b9', 3000);
+
+// Console clearing every 10 minutes
+function clearConsole() {
+  console.clear();
+}
+setInterval(clearConsole, 600000);
+
+// Image downloading functionality
+(function() {
+  if (!window.processedUrls) {
+    window.processedUrls = JSON.parse(localStorage.getItem('processedUrls')) || [];
+  }
+
+  function normalizeUrl(url) {
+    const parsedUrl = new URL(url);
+    return parsedUrl.origin + parsedUrl.pathname;
+  }
+
+  function downloadImage() {
+    const image = document.querySelector('.m_4451eb3a > img');
+    if (image) {
+      const imageUrl = image.src;
+      const normalizedUrl = normalizeUrl(imageUrl);
+      if (!window.processedUrls.includes(normalizedUrl)) {
+        const filename = normalizedUrl.substring(normalizedUrl.lastIndexOf('/') + 1);
+        fetch(imageUrl)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.blob();
+          })
+          .then(blob => {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.processedUrls.push(normalizedUrl);
+            localStorage.setItem('processedUrls', JSON.stringify(window.processedUrls));
+          })
+          .catch(error => {});
+      }
+    }
+  }
+
+  downloadImage();
+  setInterval(downloadImage, 2000);
+})();
